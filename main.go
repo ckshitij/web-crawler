@@ -38,12 +38,12 @@ func main() {
 
 	// Now you can call your crawl logic with `url`
 	// and pass json/xml file paths if needed.
-
-	fmt.Println("Crawling the site...", url)
-	data, err := crawler.GetURLInfo(url)
+	crawl, err := crawler.NewCrawler(url, 2)
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println("Error creating crawler:", err)
 		return
 	}
-	fmt.Printf("Crawled URL: %s, Status Code: %d, Response Time: %s\n", data.URL, data.StatusCode, data.ResponseTime)
+	// Call the crawl method
+	crawl.CrawlSite()
+	crawl.PrintTreeMap()
 }
