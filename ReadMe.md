@@ -6,20 +6,6 @@ A command-line tool written in Go that accepts a website URL, checks its status,
 
 ## 📌 Overview
 
-This tool allows you to:
-
-- Check if a website is reachable and view the HTTP status code and response time.
-- Crawl all internal links within the same domain.
-- Respect basic `robots.txt` rules.
-- Avoid duplicate visits to the same URL.
-- Limit crawl depth.
-- Control request rate (rate limiting).
-- Export the resulting site map as a JSON or XML file.
-
----
-
-## ✨ Features
-
 - ✅ Accept a URL as a command-line argument.
 - 🔍 Perform an HTTP GET request to the URL and return:
   - HTTP status code (e.g., 200, 404, 500)
@@ -60,20 +46,14 @@ This tool allows you to:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/go-website-crawler.git
-cd go-website-crawler
+git clone https://github.com/ckshitij/web-crawler.git
+cd web-crawler
 ```
 
 ### Run the Tool
 
 ```
-go run main.go https://example.com
-```
-
-### Example Usage
-
-```
-go run main.go https://example.com
+go run main.go https://google.com
 ```
 
 ### 📤 Exporting Site Map
@@ -99,32 +79,8 @@ Flag	Description
 --json	Export the site map to a JSON file
 --xml	Export the site map to an XML file (optional feature)
 --depth	Limit the maximum crawl depth (e.g., --depth=2)
---rate	Apply rate limiting between requests (e.g., --rate=1s)
 ```
 
-### 🧾 Sample Exported Site Map (JSON)
-
-```json
-{
-  "site": "https://example.com",
-  "status": "200 OK",
-  "response_time_ms": 120,
-  "site_map": {
-    "/": {
-      "children": {
-        "/about": {},
-        "/blog": {
-          "children": {
-            "/blog/post-1": {},
-            "/blog/post-2": {}
-          }
-        },
-        "/contact": {}
-      }
-    }
-  }
-}
-```
 
 ### 📄 Sample robots.txt Support
 
