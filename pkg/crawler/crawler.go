@@ -73,15 +73,15 @@ func (c *Crawler) Crawls(newURL EndpointResponse) {
 
 func (c *Crawler) CrawlSite() {
 
-	data, err := c.getURLInfo(c.baseURL.String())
+	rootSite, err := c.getURLInfo(c.baseURL.String())
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
-	data.Depth = 0
-	c.visitedURLs[data.URL] = true
-	fmt.Printf("Crawled URL: %s, Status Code: %d, Response Time: %s, Links %+v\n", data.URL, data.StatusCode, data.ResponseTime, data.Links)
-	c.Crawls(*data)
+	rootSite.Depth = 0
+	c.visitedURLs[rootSite.URL] = true
+	fmt.Printf("Crawled URL: %s, Status Code: %d, Response Time: %s, Links %+v\n", rootSite.URL, rootSite.StatusCode, rootSite.ResponseTime, rootSite.Links)
+	c.Crawls(*rootSite)
 	fmt.Println("Crawling completed.")
 }
 
