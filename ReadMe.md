@@ -78,7 +78,7 @@ Flag	Description
 
 --json	Export the site map to a JSON file
 --xml	Export the site map to an XML file (optional feature)
---depth	Limit the maximum crawl depth (e.g., --depth=2)
+--max_depth	Limit the maximum crawl depth (e.g., --depth=2)
 ```
 
 
