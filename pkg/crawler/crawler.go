@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -29,6 +30,7 @@ type EndpointResponse struct {
 	Depth        int
 	Links        []string
 	ResponseTime time.Duration
+	Parent       string // Parent URL for hierarchical representation
 }
 
 // NewCrawler initializes and returns a new Crawler instance.
@@ -99,6 +101,7 @@ func (c *Crawler) CrawlWorkers(wg *sync.WaitGroup, ch chan *EndpointResponse) {
 				if err != nil {
 					continue
 				}
+				newResp.Parent = response.URL
 				newResp.Depth = response.Depth + 1
 				wg.Add(1)
 				ch <- newResp
@@ -142,14 +145,34 @@ func (c *Crawler) PrintTreeMap() {
 	}
 }
 
-// PrintSiteMap prints the sitemap with stripped hostnames.
+// PrintSiteMap prints the sitemap in a hierarchical format based on parent-child relationships.
 func (c *Crawler) PrintSiteMap() {
-	fmt.Println("Main Domain:", c.treeMap[0][0].URL)
-	for i := 1; i < c.maxDepth; i++ {
-		for _, response := range c.treeMap[i] {
-			val, _ := stripHostname(response.URL)
-			fmt.Printf("Level %d  URL: %s, Status Code: %d, Response Time: %s\n", i, val, response.StatusCode, response.ResponseTime)
+	// Build parent -> children map
+	parentMap := make(map[string][]EndpointResponse)
+	for i, responses := range c.treeMap {
+		if i == 0 {
+			continue // Skip the root level
 		}
+		for _, resp := range responses {
+			parentMap[resp.Parent] = append(parentMap[resp.Parent], resp)
+		}
+	}
+
+	root := c.treeMap[0][0] // Assume the root is the only entry at depth 0
+	fmt.Printf("Main Domain: %s\n", root.URL)
+	printChildren(parentMap, root.URL, 1)
+}
+
+// printChildren recursively prints children of a parent URL with indentation.
+func printChildren(parentMap map[string][]EndpointResponse, parent string, level int) {
+	children, exists := parentMap[parent]
+	if !exists {
+		return
+	}
+	for _, child := range children {
+		val, _ := stripHostname(child.URL)
+		fmt.Printf("%s├── %s\n", strings.Repeat("  ", level), val)
+		printChildren(parentMap, child.URL, level+1)
 	}
 }
 
