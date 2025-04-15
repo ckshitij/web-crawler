@@ -1,3 +1,5 @@
+// Package crawler provides functionality to crawl websites starting from a base URL up to a specified depth.
+// It tracks visited URLs, collects metadata such as status codes and response times, and builds a map of discovered links.
 package crawler
 
 import (
@@ -11,14 +13,16 @@ import (
 	"golang.org/x/net/html"
 )
 
+// Crawler is a structure that performs recursive website crawling.
 type Crawler struct {
-	baseURL     *url.URL
-	visitedURLs sync.Map
-	maxDepth    int
-	treeMap     map[int][]EndpointResponse
-	sync.Mutex
+	baseURL     *url.URL                   // Root URL to start crawling from
+	visitedURLs sync.Map                   // Thread-safe store for visited URLs
+	maxDepth    int                        // Maximum depth to crawl
+	treeMap     map[int][]EndpointResponse // Map of depth level to response data
+	sync.Mutex                             // Embedded mutex for synchronizing access
 }
 
+// EndpointResponse represents metadata collected from a URL.
 type EndpointResponse struct {
 	URL          string
 	StatusCode   int
@@ -27,6 +31,7 @@ type EndpointResponse struct {
 	ResponseTime time.Duration
 }
 
+// NewCrawler initializes and returns a new Crawler instance.
 func NewCrawler(baseURL string, maxDepth int) (*Crawler, error) {
 	parsedURL, err := url.Parse(baseURL)
 	if err != nil {
@@ -41,7 +46,7 @@ func NewCrawler(baseURL string, maxDepth int) (*Crawler, error) {
 	return crawler, nil
 }
 
-// CrawlSite starts the crawling process from the base URL
+// Crawls performs breadth-first crawling using a custom queue.
 func (c *Crawler) Crawls(newURL EndpointResponse) {
 	queue := queue.NewQueue[*EndpointResponse]()
 	queue.Enqueue(&newURL)
@@ -75,10 +80,9 @@ func (c *Crawler) Crawls(newURL EndpointResponse) {
 	}
 }
 
+// CrawlWorkers processes URL responses concurrently from a channel.
 func (c *Crawler) CrawlWorkers(wg *sync.WaitGroup, ch chan *EndpointResponse) {
 	for response := range ch {
-		// No wg.Add here
-
 		c.Lock()
 		c.treeMap[response.Depth] = append(c.treeMap[response.Depth], *response)
 		c.Unlock()
@@ -96,8 +100,7 @@ func (c *Crawler) CrawlWorkers(wg *sync.WaitGroup, ch chan *EndpointResponse) {
 					continue
 				}
 				newResp.Depth = response.Depth + 1
-
-				wg.Add(1) // ✅ Safe to add here
+				wg.Add(1)
 				ch <- newResp
 			}
 		}
@@ -105,6 +108,7 @@ func (c *Crawler) CrawlWorkers(wg *sync.WaitGroup, ch chan *EndpointResponse) {
 	}
 }
 
+// CrawlSite begins the site crawl using multiple workers.
 func (c *Crawler) CrawlSite() {
 	rootSite, err := c.getURLInfo(c.baseURL.String())
 	if err != nil {
@@ -121,14 +125,15 @@ func (c *Crawler) CrawlSite() {
 		go c.CrawlWorkers(&wg, resCh)
 	}
 
-	wg.Add(1) // ✅ Add before sending to channel
+	wg.Add(1)
 	resCh <- rootSite
 
 	wg.Wait()
-	close(resCh) // ✅ After workers are done
+	close(resCh)
 	fmt.Println("Crawling completed.")
 }
 
+// PrintTreeMap prints the crawled site in a depth-based structure.
 func (c *Crawler) PrintTreeMap() {
 	for depth, responses := range c.treeMap {
 		for _, response := range responses {
@@ -137,26 +142,8 @@ func (c *Crawler) PrintTreeMap() {
 	}
 }
 
-func stripHostname(rawURL string) (string, error) {
-	parsed, err := url.Parse(rawURL)
-	if err != nil {
-		return "", err
-	}
-
-	// Combine Path + RawQuery + Fragment (if any)
-	stripped := parsed.Path
-	if parsed.RawQuery != "" {
-		stripped += "?" + parsed.RawQuery
-	}
-	if parsed.Fragment != "" {
-		stripped += "#" + parsed.Fragment
-	}
-
-	return stripped, nil
-}
-
+// PrintSiteMap prints the sitemap with stripped hostnames.
 func (c *Crawler) PrintSiteMap() {
-	// Print the treeMap in a structured way
 	fmt.Println("Main Domain:", c.treeMap[0][0].URL)
 	for i := 1; i < c.maxDepth; i++ {
 		for _, response := range c.treeMap[i] {
@@ -166,6 +153,23 @@ func (c *Crawler) PrintSiteMap() {
 	}
 }
 
+// stripHostname removes the scheme and hostname from a URL, leaving the path, query, and fragment.
+func stripHostname(rawURL string) (string, error) {
+	parsed, err := url.Parse(rawURL)
+	if err != nil {
+		return "", err
+	}
+	stripped := parsed.Path
+	if parsed.RawQuery != "" {
+		stripped += "?" + parsed.RawQuery
+	}
+	if parsed.Fragment != "" {
+		stripped += "#" + parsed.Fragment
+	}
+	return stripped, nil
+}
+
+// processToken extracts anchor links from HTML tokens.
 func (r *Crawler) processToken(token *html.Tokenizer) []string {
 	links := make([]string, 0)
 	for {
@@ -189,9 +193,8 @@ func (r *Crawler) processToken(token *html.Tokenizer) []string {
 	}
 }
 
+// getURLInfo performs an HTTP GET request and parses basic metadata and links.
 func (r *Crawler) getURLInfo(url string) (*EndpointResponse, error) {
-	// Simulate fetching URL info
-	// In a real scenario, you would make an HTTP request and get the response
 	startTime := time.Now()
 	resp, err := http.Get(url)
 	if err != nil {
@@ -204,7 +207,7 @@ func (r *Crawler) getURLInfo(url string) (*EndpointResponse, error) {
 	response := EndpointResponse{
 		URL:          url,
 		StatusCode:   resp.StatusCode,
-		ResponseTime: responseTime, // Example of calculating response time
+		ResponseTime: responseTime,
 	}
 	if resp.StatusCode != http.StatusOK {
 		return &response, nil
