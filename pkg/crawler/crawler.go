@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/ckshitij/web_crawler/pkg/queue"
@@ -12,9 +13,10 @@ import (
 
 type Crawler struct {
 	baseURL     *url.URL
-	visitedURLs map[string]bool
+	visitedURLs sync.Map
 	maxDepth    int
 	treeMap     map[int][]EndpointResponse
+	sync.Mutex
 }
 
 type EndpointResponse struct {
@@ -32,7 +34,7 @@ func NewCrawler(baseURL string, maxDepth int) (*Crawler, error) {
 	}
 	crawler := &Crawler{
 		baseURL:     parsedURL,
-		visitedURLs: make(map[string]bool),
+		visitedURLs: sync.Map{},
 		maxDepth:    maxDepth,
 		treeMap:     make(map[int][]EndpointResponse),
 	}
@@ -53,10 +55,12 @@ func (c *Crawler) Crawls(newURL EndpointResponse) {
 			break
 		}
 
+		c.Lock()
 		c.treeMap[currentResponse.Depth] = append(c.treeMap[currentResponse.Depth], *currentResponse)
+		c.Unlock()
 		for _, link := range currentResponse.Links {
-			if _, ok := c.visitedURLs[link]; !ok {
-				c.visitedURLs[link] = true
+			if _, ok := c.visitedURLs.Load(link); !ok {
+				c.visitedURLs.Store(link, true)
 				newResponse, err := c.getURLInfo(link)
 				if err != nil {
 					fmt.Println("Error:", err)
@@ -71,17 +75,59 @@ func (c *Crawler) Crawls(newURL EndpointResponse) {
 	}
 }
 
-func (c *Crawler) CrawlSite() {
+func (c *Crawler) CrawlWorkers(wg *sync.WaitGroup, ch chan *EndpointResponse) {
+	for response := range ch {
+		// No wg.Add here
 
+		c.Lock()
+		c.treeMap[response.Depth] = append(c.treeMap[response.Depth], *response)
+		c.Unlock()
+
+		if response.Depth >= c.maxDepth {
+			wg.Done()
+			continue
+		}
+
+		for _, link := range response.Links {
+			if _, ok := c.visitedURLs.Load(link); !ok {
+				c.visitedURLs.Store(link, true)
+				newResp, err := c.getURLInfo(link)
+				if err != nil {
+					continue
+				}
+				newResp.Depth = response.Depth + 1
+
+				wg.Add(1) // ✅ Safe to add here
+				ch <- newResp
+			}
+		}
+		wg.Done()
+	}
+}
+
+func (c *Crawler) CrawlSite() {
 	rootSite, err := c.getURLInfo(c.baseURL.String())
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
 	rootSite.Depth = 0
-	c.visitedURLs[rootSite.URL] = true
+	c.visitedURLs.Store(rootSite.URL, true)
+
 	fmt.Printf("Crawled URL: %s, Status Code: %d, Response Time: %s, Links %+v\n", rootSite.URL, rootSite.StatusCode, rootSite.ResponseTime, rootSite.Links)
-	c.Crawls(*rootSite)
+
+	var wg sync.WaitGroup
+	resCh := make(chan *EndpointResponse, 1000)
+
+	for range 10 {
+		go c.CrawlWorkers(&wg, resCh)
+	}
+
+	wg.Add(1) // ✅ Add before sending to channel
+	resCh <- rootSite
+
+	wg.Wait()
+	close(resCh) // ✅ After workers are done
 	fmt.Println("Crawling completed.")
 }
 
