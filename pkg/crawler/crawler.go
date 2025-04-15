@@ -114,8 +114,6 @@ func (c *Crawler) CrawlSite() {
 	rootSite.Depth = 0
 	c.visitedURLs.Store(rootSite.URL, true)
 
-	fmt.Printf("Crawled URL: %s, Status Code: %d, Response Time: %s, Links %+v\n", rootSite.URL, rootSite.StatusCode, rootSite.ResponseTime, rootSite.Links)
-
 	var wg sync.WaitGroup
 	resCh := make(chan *EndpointResponse, 1000)
 
@@ -135,6 +133,35 @@ func (c *Crawler) PrintTreeMap() {
 	for depth, responses := range c.treeMap {
 		for _, response := range responses {
 			fmt.Printf(" Depth: %d  URL: %s, Status Code: %d, Response Time: %s\n", depth, response.URL, response.StatusCode, response.ResponseTime)
+		}
+	}
+}
+
+func stripHostname(rawURL string) (string, error) {
+	parsed, err := url.Parse(rawURL)
+	if err != nil {
+		return "", err
+	}
+
+	// Combine Path + RawQuery + Fragment (if any)
+	stripped := parsed.Path
+	if parsed.RawQuery != "" {
+		stripped += "?" + parsed.RawQuery
+	}
+	if parsed.Fragment != "" {
+		stripped += "#" + parsed.Fragment
+	}
+
+	return stripped, nil
+}
+
+func (c *Crawler) PrintSiteMap() {
+	// Print the treeMap in a structured way
+	fmt.Println("Main Domain:", c.treeMap[0][0].URL)
+	for i := 1; i < c.maxDepth; i++ {
+		for _, response := range c.treeMap[i] {
+			val, _ := stripHostname(response.URL)
+			fmt.Printf("Level %d  URL: %s, Status Code: %d, Response Time: %s\n", i, val, response.StatusCode, response.ResponseTime)
 		}
 	}
 }

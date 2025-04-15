@@ -29,7 +29,7 @@ var rootCmd = &cobra.Command{
 			return
 		}
 		crawl.CrawlSite()
-		crawl.PrintTreeMap()
+		crawl.PrintSiteMap()
 
 		if jsonOutput != "" {
 			utils.JSON.Export(jsonOutput)
