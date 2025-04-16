@@ -32,11 +32,11 @@ var rootCmd = &cobra.Command{
 		crawl.PrintSiteMap()
 
 		if jsonOutput != "" {
-			utils.JSON.Export(jsonOutput)
+			utils.JSON.Export(jsonOutput, crawl)
 		}
 
 		if xmlOutput != "" {
-			utils.XML.Export(xmlOutput)
+			utils.XML.Export(xmlOutput, crawl)
 		}
 	},
 }

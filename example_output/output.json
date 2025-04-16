@@ -1,0 +1,179 @@
+{
+  "url": "https://google.com",
+  "status_code": 200,
+  "children": [
+    {
+      "url": "https://google.com/preferences?hl=en",
+      "status_code": 200,
+      "children": [
+        {
+          "url": "https://google.com/url?q=https://myactivity.google.com/product/search/controls%3Futm_source%3Dgoogle%26utm_medium%3Dpref-page%26hl%3Den-IN%26authuser%3D0\u0026opi=89978449\u0026sa=U\u0026ved=0ahUKEwiS7ZXW-9yMAxUpzjgGHX0rE8EQ7JsICAE\u0026usg=AOvVaw2sC2rQsyoxBPxEDDWkyu4M",
+          "status_code": 200,
+          "children": [
+            {
+              "url": "https://google.com/",
+              "status_code": 200,
+              "children": [],
+              "response_time": 410273375
+            }
+          ],
+          "response_time": 876877709
+        },
+        {
+          "url": "https://google.com/url?q=/setting/search/privateresults%3Fhl%3Den-IN%26authuser%3D0\u0026opi=89978449\u0026sa=U\u0026ved=0ahUKEwiS7ZXW-9yMAxUpzjgGHX0rE8EQ-vUJCAI\u0026usg=AOvVaw0iNlPjvBLYsvMbbli2h8XK",
+          "status_code": 200,
+          "children": [
+            {
+              "url": "https://google.com/signin/usernamerecovery?continue=https://www.google.com/setting/search/privateresults/?hl%3Den-IN\u0026dsh=S-333747051:1744820715299606\u0026flowEntry=ServiceLogin\u0026flowName=WebLiteSignIn\u0026followup=https://www.google.com/setting/search/privateresults/?hl%3Den-IN\u0026hl=en-IN\u0026ifkv=AXH0vVuh_boeNTwGcxMg8YBoL6ahuTqL4ccOgtQqOFWNAAXlaTWPybT2qWcrMcVdkosBF4xtJZEffQ",
+              "status_code": 404,
+              "children": [],
+              "response_time": 110683917
+            },
+            {
+              "url": "https://google.com/lifecycle/flows/signup?continue=https://www.google.com/setting/search/privateresults/?hl%3Den-IN\u0026dsh=S-333747051:1744820715299606\u0026flowEntry=SignUp\u0026flowName=GlifWebSignIn\u0026followup=https://www.google.com/setting/search/privateresults/?hl%3Den-IN\u0026hl=en-IN\u0026ifkv=AXH0vVuh_boeNTwGcxMg8YBoL6ahuTqL4ccOgtQqOFWNAAXlaTWPybT2qWcrMcVdkosBF4xtJZEffQ",
+              "status_code": 404,
+              "children": [],
+              "response_time": 111528750
+            }
+          ],
+          "response_time": 1667094208
+        },
+        {
+          "url": "https://google.com/url?q=/safesearch%3Fhl%3Den-IN%26prev%3Dhttps://www.google.com/preferences%3Fhl%253Den\u0026opi=89978449\u0026sa=U\u0026ved=0ahUKEwiS7ZXW-9yMAxUpzjgGHX0rE8EQ1fMKCAM\u0026usg=AOvVaw12mmEmX2C6eBHCdFSGF48f",
+          "status_code": 200,
+          "children": [
+            {
+              "url": "https://google.com/?sca_esv=99c99235e0cddbf1\u0026hl=en-IN\u0026output=search\u0026ie=UTF-8",
+              "status_code": 200,
+              "children": [],
+              "response_time": 211675416
+            }
+          ],
+          "response_time": 287779459
+        },
+        {
+          "url": "https://google.com/url?q=https://support.google.com/websearch/%3Fp%3Dws_results_help%26hl%3Den-IN%26fg%3D1\u0026opi=89978449\u0026sa=U\u0026ved=0ahUKEwiS7ZXW-9yMAxUpzjgGHX0rE8EQ8KwCCAg\u0026usg=AOvVaw0TuxKgZGIObsp49UIUO_LL",
+          "status_code": 200,
+          "children": [],
+          "response_time": 3138683083
+        }
+      ],
+      "response_time": 301648875
+    },
+    {
+      "url": "https://google.com/advanced_search?hl=en-IN\u0026authuser=0",
+      "status_code": 200,
+      "children": [
+        {
+          "url": "https://google.com/webhp?tab=ww",
+          "status_code": 200,
+          "children": [
+            {
+              "url": "https://google.com/intl/en/about.html",
+              "status_code": 200,
+              "children": [],
+              "response_time": 309937208
+            }
+          ],
+          "response_time": 204468042
+        },
+        {
+          "url": "https://google.com/preferences?hl=en-IN",
+          "status_code": 200,
+          "children": [
+            {
+              "url": "https://google.com/url?q=https://myactivity.google.com/product/search/controls%3Futm_source%3Dgoogle%26utm_medium%3Dpref-page%26hl%3Den-IN%26authuser%3D0\u0026opi=89978449\u0026sa=U\u0026ved=0ahUKEwimmsnW-9yMAxV3yjgGHTqvAWgQ7JsICAE\u0026usg=AOvVaw3H_aRGcnb3no8joFlNWjqS",
+              "status_code": 200,
+              "children": [],
+              "response_time": 539900167
+            },
+            {
+              "url": "https://google.com/url?q=/setting/search/privateresults%3Fhl%3Den-IN%26authuser%3D0\u0026opi=89978449\u0026sa=U\u0026ved=0ahUKEwimmsnW-9yMAxV3yjgGHTqvAWgQ-vUJCAI\u0026usg=AOvVaw1Me67tzmGEWnQnp_SeBxG2",
+              "status_code": 200,
+              "children": [],
+              "response_time": 1781595916
+            },
+            {
+              "url": "https://google.com/url?q=/safesearch%3Fhl%3Den-IN%26prev%3Dhttps://www.google.com/preferences%3Fhl%253Den-IN\u0026opi=89978449\u0026sa=U\u0026ved=0ahUKEwimmsnW-9yMAxV3yjgGHTqvAWgQ1fMKCAM\u0026usg=AOvVaw1n4Zag5RBWhYVyrLg4ruVv",
+              "status_code": 200,
+              "children": [],
+              "response_time": 276881292
+            },
+            {
+              "url": "https://google.com/url?q=https://support.google.com/websearch/%3Fp%3Dws_results_help%26hl%3Den-IN%26fg%3D1\u0026opi=89978449\u0026sa=U\u0026ved=0ahUKEwimmsnW-9yMAxV3yjgGHTqvAWgQ8KwCCAg\u0026usg=AOvVaw1z7UkVJP7Z0Y1i1n5KCfaG",
+              "status_code": 200,
+              "children": [],
+              "response_time": 3206349750
+            }
+          ],
+          "response_time": 218701083
+        },
+        {
+          "url": "https://google.com/url?q=https://support.google.com/websearch/%3Fp%3Dws_results_help%26hl%3Den-IN%26fg%3D1\u0026opi=89978449\u0026sa=U\u0026ved=0ahUKEwj53qfW-9yMAxUpyzgGHa2XPVIQ8KwCCAI\u0026usg=AOvVaw1Pny1wLL9fIwjDmJrXKygy",
+          "status_code": 200,
+          "children": [
+            {
+              "url": "https://google.com#hcfe-content",
+              "status_code": 200,
+              "children": [],
+              "response_time": 203519916
+            },
+            {
+              "url": "https://google.com/?tab=uu",
+              "status_code": 200,
+              "children": [],
+              "response_time": 213608583
+            },
+            {
+              "url": "https://google.com/websearch",
+              "status_code": 404,
+              "children": [],
+              "response_time": 112897208
+            }
+          ],
+          "response_time": 2200618666
+        }
+      ],
+      "response_time": 225720041
+    },
+    {
+      "url": "https://google.com/intl/en/ads/",
+      "status_code": 200,
+      "children": [
+        {
+          "url": "https://google.com#main-page-content",
+          "status_code": 200,
+          "children": [],
+          "response_time": 410508041
+        },
+        {
+          "url": "https://google.com/home/",
+          "status_code": 200,
+          "children": [
+            {
+              "url": "https://google.com#page",
+              "status_code": 200,
+              "children": [],
+              "response_time": 205432250
+            },
+            {
+              "url": "https://google.com/welcome/",
+              "status_code": 404,
+              "children": [],
+              "response_time": 109233209
+            },
+            {
+              "url": "https://google.com/about-google-home/",
+              "status_code": 404,
+              "children": [],
+              "response_time": 109488167
+            }
+          ],
+          "response_time": 938355500
+        }
+      ],
+      "response_time": 569204417
+    }
+  ],
+  "response_time": 385382667
+}

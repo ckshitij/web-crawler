@@ -61,13 +61,13 @@ go run main.go https://google.com
 #### JSON
 
 ```
-go run main.go https://example.com --json output.json
+go run main.go https://google.com --json output.json
 ```
 
 #### XML (Optional)
 
 ```
-go run main.go https://example.com --xml output.xml
+go run main.go https://google.com --xml output.xml
 ```
 
 ### ⚙️ Command-Line Options

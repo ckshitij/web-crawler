@@ -3,9 +3,12 @@
 package crawler
 
 import (
+	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -13,25 +16,6 @@ import (
 	"github.com/ckshitij/web_crawler/pkg/queue"
 	"golang.org/x/net/html"
 )
-
-// Crawler is a structure that performs recursive website crawling.
-type Crawler struct {
-	baseURL     *url.URL                   // Root URL to start crawling from
-	visitedURLs sync.Map                   // Thread-safe store for visited URLs
-	maxDepth    int                        // Maximum depth to crawl
-	treeMap     map[int][]EndpointResponse // Map of depth level to response data
-	sync.Mutex                             // Embedded mutex for synchronizing access
-}
-
-// EndpointResponse represents metadata collected from a URL.
-type EndpointResponse struct {
-	URL          string
-	StatusCode   int
-	Depth        int
-	Links        []string
-	ResponseTime time.Duration
-	Parent       string // Parent URL for hierarchical representation
-}
 
 // NewCrawler initializes and returns a new Crawler instance.
 func NewCrawler(baseURL string, maxDepth int) (*Crawler, error) {
@@ -136,15 +120,6 @@ func (c *Crawler) CrawlSite() {
 	fmt.Println("Crawling completed.")
 }
 
-// PrintTreeMap prints the crawled site in a depth-based structure.
-func (c *Crawler) PrintTreeMap() {
-	for depth, responses := range c.treeMap {
-		for _, response := range responses {
-			fmt.Printf(" Depth: %d  URL: %s, Status Code: %d, Response Time: %s\n", depth, response.URL, response.StatusCode, response.ResponseTime)
-		}
-	}
-}
-
 // PrintSiteMap prints the sitemap in a hierarchical format based on parent-child relationships.
 func (c *Crawler) PrintSiteMap() {
 	// Build parent -> children map
@@ -240,4 +215,52 @@ func (r *Crawler) getURLInfo(url string) (*EndpointResponse, error) {
 	response.Links = links
 
 	return &response, err
+}
+
+func (c *Crawler) ExportSiteMapJSON(filename string) error {
+	root := c.buildSiteTree()
+	data, err := json.MarshalIndent(root, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, data, 0644)
+}
+
+func (c *Crawler) ExportSiteMapXML(filename string) error {
+	root := c.buildSiteTree()
+	data, err := xml.MarshalIndent(root, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, data, 0644)
+}
+
+func (c *Crawler) buildSiteTree() SiteMapNode {
+	var parentMap = map[string][]EndpointResponse{}
+	for depth, nodes := range c.treeMap {
+		if depth == 0 {
+			continue
+		}
+		for _, node := range nodes {
+			parentMap[node.Parent] = append(parentMap[node.Parent], node)
+		}
+	}
+
+	root := c.treeMap[0][0]
+	return buildSiteNode(root, parentMap)
+}
+
+func buildSiteNode(node EndpointResponse, parentMap map[string][]EndpointResponse) SiteMapNode {
+	SiteMapNode := SiteMapNode{
+		ResponseTime: node.ResponseTime,
+		StatusCode:   node.StatusCode,
+		URL:          node.URL,
+		Childerns:    []*SiteMapNode{},
+	}
+	childers := parentMap[node.URL]
+	for _, child := range childers {
+		childNode := buildSiteNode(child, parentMap)
+		SiteMapNode.Childerns = append(SiteMapNode.Childerns, &childNode)
+	}
+	return SiteMapNode
 }
